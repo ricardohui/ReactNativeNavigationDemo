@@ -46,33 +46,23 @@ export default class App extends Component<Props> {
 
     console.log(`${buttonId} is pressed.`);
     if (buttonId == "menuButton") {
-      this.setState({ count: this.state.count + 1 });
-      if (this.state.count % 2 == 0) {
-        this.hideSideMenu("left");
-      } else {
-        this.showSideMenu("left");
-      }
+      this.toggleSideMenu("left", this.state.count);
     }
   }
-  showSideMenu(side) {
+
+  toggleSideMenu(side, count) {
+    let visible = false;
+    if (count % 2 == 0) {
+      visible = true;
+    }
     Navigation.mergeOptions(this.props.componentId, {
       sideMenu: {
         [side]: {
-          visible: true
+          visible
         }
       }
     });
-    this.setState({ isDrawerOpen: true });
-  }
-  hideSideMenu(side) {
-    Navigation.mergeOptions(this.props.componentId, {
-      sideMenu: {
-        [side]: {
-          visible: false
-        }
-      }
-    });
-    this.setState({ isDrawerOpen: false });
+    this.setState({ isDrawerOpen: visible, count: count + 1 });
   }
   render() {
     return (
@@ -82,7 +72,7 @@ export default class App extends Component<Props> {
         <Text style={styles.instructions}>To get started, edit App.js</Text>
         <Button
           title="Show Left Side Menu"
-          onPress={() => this.showSideMenu("left")}
+          onPress={() => this.toggleSideMenu("left", this.state.count)}
         />
       </View>
     );
