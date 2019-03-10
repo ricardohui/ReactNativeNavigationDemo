@@ -9,7 +9,9 @@
 
 import React, { Component } from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, Button, View } from "react-native";
+
+import { Navigation } from "react-native-navigation";
 
 const instructions = Platform.select({
   ios: "Press Cmd+R to reload,\n" + "Cmd+D or shake for dev menu",
@@ -20,13 +22,43 @@ const instructions = Platform.select({
 
 type Props = {};
 export default class App extends Component<Props> {
+  constructor(props) {
+    super(props);
+    this.subscription = Navigation.events().bindComponent(this);
+  }
+
+  componentWillUnmount() {
+    console.log("RNN", `TBB.componentWillUnmount`);
+    this.subscription.remove();
+  }
+
+  navigationButtonPressed({ buttonId }) {
+    // will be called when "buttonOne" is clicked
+    console.log(`${buttonId} is pressed.`);
+    if (buttonId == "menuButton") {
+      this.showSideMenu("left");
+    }
+  }
+  showSideMenu(side) {
+    Navigation.mergeOptions(this.props.componentId, {
+      sideMenu: {
+        [side]: {
+          visible: true
+        }
+      }
+    });
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>Welcome to React Native!</Text>
         <Icon name={"settings-cell"} size={30} />
         <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
+        <Button
+          title="Show Left Side Menu"
+          onPress={() => this.showSideMenu("left")}
+        />
       </View>
     );
   }
